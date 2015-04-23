@@ -1,1 +1,3 @@
 load favorites on pageload   in <body onload=processnamehere()>
+update request uri acording numPages paramater
+or better, use getelement to read the desired number of pages from within getGists function
