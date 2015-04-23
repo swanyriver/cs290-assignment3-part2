@@ -1,3 +1,9 @@
+var GistList = [];
+function Gist (desciption ) {
+    this.description = desciption;
+    //todo make more of this;
+}
+
 function loadFavorites() {
     //TODO implement
     console.log('onload called loadFavorites');
@@ -5,6 +11,7 @@ function loadFavorites() {
 
 
 //attached to search button
+var GistsFeed;  //todo return to local variable  MAYBE
 function getGists() {
 
     console.log('getGists running');
@@ -12,7 +19,7 @@ function getGists() {
     //var url = 'https://api.github.com/gists';
     var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';
     var gistReq = new XMLHttpRequest();
-    var GistsFeed;
+    //var GistsFeed;
 
     if (!gistReq) {
         throw 'unable to create XMLHttpRequest';
@@ -48,6 +55,7 @@ function getGists() {
                     //for (var f in g.files){
                     //    console.log(f[property].language);
                     //}
+                    for (var f in g.files){ console.log(g.files[f].language);}
                 }
                 
             });
@@ -55,12 +63,4 @@ function getGists() {
     };
     gistReq.open('GET', url);
     gistReq.send();
-}
-
-function testparse(){
-    var giststring;
-    $.get('gists', function(data) {
-        giststring = data;
-    });
-    console.log(giststring);
 }
