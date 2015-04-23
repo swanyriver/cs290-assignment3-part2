@@ -9,7 +9,8 @@ function getGists() {
 
     console.log('getGists running');
 
-    var url = 'https://api.github.com/gists';
+    //var url = 'https://api.github.com/gists';
+    var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';
     var gistReq = new XMLHttpRequest();
     var GistsFeed;
 
@@ -38,12 +39,15 @@ function getGists() {
                 if (!g.hasOwnProperty('files')) {
                     console.log('this one has no file');
                 } else {
-                    
+                    //console.log( typeof g.files );
                     //g.files.forEach(function (f) {
                     //    if (!f.hasOwnProperty('language')) {
                     //        console.log('this file has no language');
                     //    }
                     //});
+                    //for (var f in g.files){
+                    //    console.log(f[property].language);
+                    //}
                 }
                 
             });
@@ -53,3 +57,10 @@ function getGists() {
     gistReq.send();
 }
 
+function testparse(){
+    var giststring;
+    $.get('gists', function(data) {
+        giststring = data;
+    });
+    console.log(giststring);
+}
