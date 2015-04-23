@@ -26,12 +26,12 @@ function getGists() {
         if (this.readyState === 4 && this.status === 200) {
             console.log("request done");
             
-            if (this.resoponseText) {
-                var GistsFeed = JSON.parse(this.resoponseText);
+            if (this.response) {
+                var GistsFeed = JSON.parse(this.response);
             } else {
-                throw 'no response text';
+                throw 'no response';
             }
-            console.log(this.resoponseText);
+            console.log(this.response);
             console.log(GistsFeed.toString());
         }
     };
