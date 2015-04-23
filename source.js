@@ -31,8 +31,11 @@ function getGists() {
             } else {
                 throw 'no response';
             }
-            console.log(this.response);
-            console.log(GistsFeed.toString());
+            //console.log(this.response);
+            //console.log(GistsFeed.toString());
+            GistsFeed.forEach(function(g){
+                console.log(g.url);
+            });
         }
     };
     gistReq.open('GET', url);
