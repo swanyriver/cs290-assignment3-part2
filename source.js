@@ -1,14 +1,4 @@
 var GistList = [];
-function Gist(desciption, useravtimg,
-               username, userhtml, gisthtml, languages, id) {
-    this.description = desciption;
-    this.useravtimg = useravtimg;
-    this.username = username;
-    this.userhtml = userhtml;
-    this.gisthtml = gisthtml;
-    this.languages = languages;
-    this.id = id;
-}
 
 function updateFavorites() {
     //TODO implement
@@ -130,7 +120,7 @@ function getGists() {
             GistList = [];
             GistsFeed.forEach(function (g) {
 
-                var nextGist = new Gist();
+                var nextGist = new Object();
 
                 nextGist.id = g.id;
                 nextGist.gisthtml = g.html_url;
