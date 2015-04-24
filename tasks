@@ -1,18 +1,6 @@
-load favorites on pageload   in <body onload=processnamehere()>
 update request uri acording numPages paramater
 or better, use getelement to read the desired number of pages from within getGists function
 
-localStorage for favorites
+#pages selection
 
-localStorage.setItem(gist.id,JSON.stringify(gist));
-
-str = localStorage.getItem(id)
-
-JSON.parse(str);
-
-for (var i = 0; i<= localStorage.length; i++){
-	//add id to favorites id
-	document.getElementid(favorite).appendchild(makefavorite(makeglist(json.parse(localstoage.getitem(localstorage.key(i))))));
-
-}
-
+Language selection
