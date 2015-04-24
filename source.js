@@ -1,6 +1,8 @@
 var GistList = [];
 var favoriteIDs = [];
 var languagesPresent = [];
+var numEachLanguage = new Object();
+
 
 
 function updateFavorites() {
@@ -79,13 +81,22 @@ function updateList() {
 
 function listFilter(gist){
     //is a favorite
-    if(favoriteIDs.indexOf(gist.id) != -1){
-        return false;
-    }
+    //if(favoriteIDs.indexOf(gist.id) != -1){
+    //    return false;
+    //}
     
     //not in selected language
     //TODO implement
     
+    //return true;
+    return (nonFavorite(gist) && languageSelected(gist));
+}
+
+function nonFavorite(gist){
+    return (favoriteIDs.indexOf(gist.id) == -1);
+}
+function languageSelected(gist){
+    //TODO implement this
     return true;
 }
 
@@ -233,7 +244,11 @@ function getGists() {
                     }
                     if (languagesPresent.indexOf(lang) == -1){
                         languagesPresent.push(lang);
+                        numEachLanguage[lang] = 1;
+                    } else {
+                        numEachLanguage[lang]++;
                     }
+                    
                 }
 
                 GistList.push(nextGist);
