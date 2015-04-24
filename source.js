@@ -12,6 +12,15 @@ function Gist (desciption, useravtimg, username, userhtml, gisthtml, languages, 
 function loadFavorites() {
     //TODO implement
     console.log('onload called loadFavorites');
+    
+    var glistsection = document.getElementById("gistlist");
+    var g = document.createElement('div');
+    g.setAttribute('class', 'gistItem');
+    var t = document.createTextNode('gist item 1');
+    g.appendChild(t);
+    glistsection.appendChild(g);
+    
+    
 }
 
 
