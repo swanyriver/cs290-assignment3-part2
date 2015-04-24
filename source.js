@@ -93,7 +93,6 @@ function GistListItem(gist) {
     fav.setAttribute('class', 'favoritebutton');
     fav.setAttribute('id', gist.id);
     fav.setAttribute('onclick', 'favorite(this.id, this)');
-
     secondline.appendChild(fav);
 
     glitem.appendChild(secondline);
