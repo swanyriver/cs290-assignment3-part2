@@ -41,6 +41,21 @@ function favorite(id, elem) {
 
 function unfavorite(id, elem) {
     console.log ("unfavorite", id);
+    
+    //remove list from local storage
+    localStorage.removeItem(id);
+    
+    //remove from favorite list display
+    while(elem.className != 'FavoriteItem'){
+        elem = elem.parentElement;
+    }
+    document.getElementById('favoritelist').removeChild(elem);
+    
+    //remove id from favorites
+    favoriteIDs.splice(favoriteIDs.indexOf(id),1);
+    
+    //update gistlist, if removed favorite is still in results it will be displayed
+    updateList();
 }
 
 function getGistbyID(id){
