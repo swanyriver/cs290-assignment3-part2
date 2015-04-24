@@ -23,6 +23,10 @@ function loadFavorites() {
     
 }
 
+function favorite() {
+    console.log('favorite clicked');   
+}
+
 
 //attached to search button
 function getGists() {
