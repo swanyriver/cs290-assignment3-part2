@@ -1,7 +1,12 @@
 var GistList = [];
-function Gist (desciption ) {
+function Gist (desciption, useravtimg, username, userhtml, gisthtml, languages, id) {
     this.description = desciption;
-    //todo make more of this;
+    this.useravtimg = useravtimg;
+    this.username = username;
+    this.userhtml = userhtml;
+    this.gisthtml = gisthtml;
+    this.languages = languages;
+    this.id = id;
 }
 
 function loadFavorites() {
@@ -11,7 +16,6 @@ function loadFavorites() {
 
 
 //attached to search button
-var GistsFeed;  //todo return to local variable  MAYBE
 function getGists() {
 
     console.log('getGists running');
@@ -19,12 +23,13 @@ function getGists() {
     //var url = 'https://api.github.com/gists';
     var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';
     var gistReq = new XMLHttpRequest();
-    //var GistsFeed;
+    var GistsFeed;
 
     if (!gistReq) {
         throw 'unable to create XMLHttpRequest';
     }
 
+    //defining behavior for state changes, particularily state 4, request done//
     gistReq.onreadystatechange = function () {
         console.log(this.readyState, this.status, this.statusText);
         if (this.readyState === 4 && this.status === 200) {
@@ -35,32 +40,45 @@ function getGists() {
             } else {
                 throw 'no response';
             }
-            //console.log(this.response);
-            //console.log(GistsFeed.toString());
+            
+            //////make an array of gists////
+            GistList = [];
             GistsFeed.forEach(function (g) {
-                //console.log(g.description);
-                if (g.hasOwnProperty('owner')) {
-                    console.log(g.owner.avatar_url);
+                
+                nextGist = new Gist();
+                
+                nextGist.id = g.id;
+                nextGist.gisthtml = g.html_url;
+                
+                if (g.description) {
+                    nextGist.description = g.description;
+                } else {
+                    nextGist.description = 'No Description Provided';
                 }
                 
-                if (!g.hasOwnProperty('files')) {
-                    console.log('this one has no file');
+                if (g.hasOwnProperty('owner')) {
+                    nextGist.username = g.owner.login;
+                    nextGist.userhtml = g.owner.html_url;
+                    nextGist.useravtimg = g.owner.avatar_url;
                 } else {
-                    //console.log( typeof g.files );
-                    //g.files.forEach(function (f) {
-                    //    if (!f.hasOwnProperty('language')) {
-                    //        console.log('this file has no language');
-                    //    }
-                    //});
-                    //for (var f in g.files){
-                    //    console.log(f[property].language);
-                    //}
-                    for (var f in g.files){ console.log(g.files[f].language);}
+                    nextGist.username = 'anonymous';
+                    nextGist.userhtml = null;
+                    nextGist.useravtimg = 'avatar.png';
                 }
+                
+                //get languages and other file properties
+                nextGist.languages = [];
+                for (var f in g.files){ 
+                    nextGist.languages.push(g.files[f].language);
+                }
+                
+                GistList.push(nextGist);
                 
             });
         }
     };
+    
+    //sending request
     gistReq.open('GET', url);
     gistReq.send();
 }
