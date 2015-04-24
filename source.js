@@ -8,10 +8,10 @@ var numEachLanguage = new Object();
 function updateFavorites() {
     //TODO implement
     console.log('onload called loadFavorites');
-    
+
     favlist = document.getElementById('favoritelist');
-    
-    for ( var i = 0; i < localStorage.length; i++ ){
+
+    for (var i = 0; i < localStorage.length; i++) {
         key = localStorage.key(i);
         jsonStr = localStorage.getItem(key);
         favitem = JSON.parse(jsonStr);
@@ -77,18 +77,15 @@ function updateList() {
     GistList.filter(listFilter).forEach(function (gist) {
         list.appendChild(new GistListItem(gist));
     });
+    
+    updateLanguagePanel();
+}
+
+function updateLanguagePanel(){
+    
 }
 
 function listFilter(gist){
-    //is a favorite
-    //if(favoriteIDs.indexOf(gist.id) != -1){
-    //    return false;
-    //}
-    
-    //not in selected language
-    //TODO implement
-    
-    //return true;
     return (nonFavorite(gist) && languageSelected(gist));
 }
 
@@ -179,14 +176,27 @@ function FavoriteListItem(glitem){
     return glitem;
 }
 
+function getGistsButton(){
+    //initialize
+    GistList = [];
+    GistList.ids = [];
+    
+    //exctact paramater from html element
+    var pageSelect = document.getElementById('page-select');
+    numPages = pageSelect.options[pageSelect.selectedIndex].value
+    console.log(numPages, " pages of gists requested");
+    
+    //call recursive Get
+    getGists(numPages,1);
+    
+}
 
 //attached to search button
-function getGists() {
+function getGists(PagesRequested, PageNum) {
 
-    console.log('getGists running');
-
-    //var url = 'https://api.github.com/gists';
-    var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';  //TODO reset to github api
+    var url = 'https://api.github.com/gists?page=' + PageNum;
+    console.log("request url: ", url);
+    //var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';  //TODO reset to github api
     var gistReq = new XMLHttpRequest();
     var GistsFeed;
 
@@ -199,6 +209,7 @@ function getGists() {
         console.log(this.readyState, this.status, this.statusText);
         if (this.readyState === 4 && this.status === 200) {
             console.log('request done');
+            console.log('page', PageNum);
 
             if (this.response) {
                 GistsFeed = JSON.parse(this.response);
@@ -206,58 +217,25 @@ function getGists() {
                 throw 'no response';
             }
 
-            //////make an array of gists////
-            GistList = [];
-            languagesPresent = [];
+            //////make an array of gists////            
             GistsFeed.forEach(function (g) {
 
-                var nextGist = new Object();
-
-                nextGist.id = g.id;
-                nextGist.gisthtml = g.html_url;
-
-                if (g.description) {
-                    nextGist.description = g.description;
-                } else {
-                    nextGist.description = 'No Description Provided';
+                if(GistList.indexOf(g.id) == -1 ) {
+                    GistList.push(CreateGist(g));
+                    GistList.ids.push(g.id);
                 }
-
-                if (g.hasOwnProperty('owner')) {
-                    nextGist.username = g.owner.login;
-                    nextGist.userhtml = g.owner.html_url;
-                    nextGist.useravtimg = g.owner.avatar_url;
-                } else {
-                    nextGist.username = 'anonymous';
-                    nextGist.userhtml = null;
-                    nextGist.useravtimg = 'avatar.png';
-                }
-
-                //get languages and other file properties
-                nextGist.languages = [];
-                for (var f in g.files) {
-                    var lang = g.files[f].language;
-                    if (!lang){
-                        lang = 'None';
-                    }
-                    if (nextGist.languages.indexOf(lang) == -1){
-                        nextGist.languages.push(lang);
-                    }
-                    if (languagesPresent.indexOf(lang) == -1){
-                        languagesPresent.push(lang);
-                        numEachLanguage[lang] = 1;
-                    } else {
-                        numEachLanguage[lang]++;
-                    }
-                    
-                }
-
-                GistList.push(nextGist);
-
+                
             });
 
-
-            ////make calls to update database and refresh
-            updateList();
+            
+            /////recusive call to xmlrequest,  update page elements on breakcase
+            if(PageNum<PagesRequested){
+                getGists(PagesRequested,++PageNum);
+            } else {
+                ////make calls to update database and refresh
+                console.log("all pages loaded, refresing page now");
+                updateList();
+            }
 
         }
     };
@@ -265,4 +243,42 @@ function getGists() {
     //sending request
     gistReq.open('GET', url);
     gistReq.send();
+
+}
+
+function CreateGist(g){
+    var nextGist = new Object();
+
+    nextGist.id = g.id;
+    nextGist.gisthtml = g.html_url;
+
+    if (g.description) {
+        nextGist.description = g.description;
+    } else {
+        nextGist.description = 'No Description Provided';
+    }
+
+    if (g.hasOwnProperty('owner')) {
+        nextGist.username = g.owner.login;
+        nextGist.userhtml = g.owner.html_url;
+        nextGist.useravtimg = g.owner.avatar_url;
+    } else {
+        nextGist.username = 'anonymous';
+        nextGist.userhtml = null;
+        nextGist.useravtimg = 'avatar.png';
+    }
+
+    //get languages and other file properties
+    nextGist.languages = [];
+    for (var f in g.files) {
+        var lang = g.files[f].language;
+        if (!lang){
+            lang = 'None';
+        }
+        if (nextGist.languages.indexOf(lang) == -1){
+            nextGist.languages.push(lang);
+        }
+    }
+    
+    return nextGist;
 }

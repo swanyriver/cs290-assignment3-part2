@@ -7,7 +7,15 @@
         <script type="text/javascript" src="source.js"></script>
     </head>
     <body onload="updateFavorites()">
-        <input type="button" value="Search" onclick="getGists()">
+        <input type="button" value="Search" onclick="getGistsButton()">
+        Number of Pages to Return
+        <select id="page-select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
         
         <div id='contentconainer'>
         
