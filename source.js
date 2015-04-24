@@ -8,12 +8,19 @@ function updateFavorites() {
 
 function favorite(id, elem) {
     
+    console.log("favorite",id);
+    
     while(elem.className != 'gistItem'){
         elem = elem.parentElement;
     }
     
     elem.parentElement.removeChild(elem);
-    document.getElementById('favoritelist').appendChild(elem);
+    document.getElementById('favoritelist').appendChild(FavoriteListItem(elem));
+
+}
+
+function unfavorite(id, elem) {
+    console.log ("unfavorite", id);
 }
 
 function updateList(updateList) {
@@ -93,6 +100,17 @@ function GistListItem(gist) {
 
     return glitem;
 
+}
+
+//recives a gistlist item made by GistListItem
+function FavoriteListItem(glitem){
+    
+    glitem.className='FavoriteItem';
+    var button = glitem.getElementsByClassName('favoritebutton')[0];
+    button.setAttribute('src', 'star.jpg');
+    button.setAttribute('onclick', 'unfavorite(this.id, this)'); 
+    
+    return glitem;
 }
 
 
