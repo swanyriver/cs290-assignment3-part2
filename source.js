@@ -1,5 +1,6 @@
 var GistList = [];
 var favoriteIDs = [];
+var languagesPresent = [];
 
 
 function updateFavorites() {
@@ -196,6 +197,7 @@ function getGists() {
 
             //////make an array of gists////
             GistList = [];
+            languagesPresent = [];
             GistsFeed.forEach(function (g) {
 
                 var nextGist = new Object();
@@ -222,7 +224,16 @@ function getGists() {
                 //get languages and other file properties
                 nextGist.languages = [];
                 for (var f in g.files) {
-                    nextGist.languages.push(g.files[f].language);
+                    var lang = g.files[f].language;
+                    if (!lang){
+                        lang = 'None';
+                    }
+                    if (nextGist.languages.indexOf(lang) == -1){
+                        nextGist.languages.push(lang);
+                    }
+                    if (languagesPresent.indexOf(lang) == -1){
+                        languagesPresent.push(lang);
+                    }
                 }
 
                 GistList.push(nextGist);
