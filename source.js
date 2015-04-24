@@ -23,8 +23,8 @@ function loadFavorites() {
     
 }
 
-function favorite() {
-    console.log('favorite clicked');   
+function favorite(id) {
+    console.log('favorite clicked ', id);   
 }
 
 
