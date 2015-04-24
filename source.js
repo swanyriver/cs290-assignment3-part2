@@ -13,19 +13,20 @@ function loadFavorites() {
     //TODO implement
     console.log('onload called loadFavorites');
     
-    var glistsection = document.getElementById("gistlist");
-    var g = document.createElement('div');
-    g.setAttribute('class', 'gistItem');
-    var t = document.createTextNode('gist item 1');
-    g.appendChild(t);
-    glistsection.appendChild(g);
-    
-    
 }
 
 function favorite(id) {
     console.log('favorite clicked ', id);   
 }
+
+function updateList(){
+    var list = document.getElementById('gistlist');
+    
+    GistList.forEach(function(gist){
+        list.appendChild(GistListItem(gist));
+    });
+}
+
 
 function GistListItem(gist){
     var glitem = document.createElement('div');
@@ -53,7 +54,7 @@ function GistListItem(gist){
     ownername.appendChild(ownernameTEXT);
     
     if (gist.userhtml) {
-        ownerlink.appendChild(ownerimage);
+        ownerlink.appendChild(ownername);
         firstline.appendChild(ownerlink);
     }
     else firstline.appendChild(ownername); 
@@ -93,7 +94,7 @@ function getGists() {
     console.log('getGists running');
 
     //var url = 'https://api.github.com/gists';
-    var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';
+    var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';  //TODO reset to github api
     var gistReq = new XMLHttpRequest();
     var GistsFeed;
 
@@ -150,13 +151,8 @@ function getGists() {
             
             
             ////make calls to update database and refresh
+            updateList();
             
-            //test out insert
-            
-            var sec = document.getElementById('gistlist');
-            sec.appendChild(GistListItem(GistList[0]));
-            sec.appendChild(GistListItem(GistList[1]));
-
         }
     };
     
