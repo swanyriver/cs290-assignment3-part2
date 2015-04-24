@@ -1,8 +1,22 @@
 var GistList = [];
+var favoriteIDs = [];
+
 
 function updateFavorites() {
     //TODO implement
     console.log('onload called loadFavorites');
+    
+    favlist = document.getElementById('favoritelist');
+    
+    for ( var i = 0; i < localStorage.length; i++ ){
+        key = localStorage.key(i);
+        jsonStr = localStorage.getItem(key);
+        favitem = JSON.parse(jsonStr);
+        
+        favoriteIDs.push(favitem.id);
+        
+        favlist.appendChild(FavoriteListItem(GistListItem(favitem)));
+    }
 
 }
 
@@ -10,17 +24,31 @@ function favorite(id, elem) {
     
     console.log("favorite",id);
     
+    //get list item
     while(elem.className != 'gistItem'){
         elem = elem.parentElement;
     }
     
+    //remove from gists and move to favorite
     elem.parentElement.removeChild(elem);
     document.getElementById('favoritelist').appendChild(FavoriteListItem(elem));
+    
+    //store favorite in local storage
+    favoriteIDs.push(id);
+    localStorage.setItem(id,JSON.stringify(getGistbyID(id)));
 
 }
 
 function unfavorite(id, elem) {
     console.log ("unfavorite", id);
+}
+
+function getGistbyID(id){
+    for (var i = 0; i<GistList.length; i++){
+        if (GistList[i].id==id){
+            return GistList[i];
+        }
+    }
 }
 
 function updateList(updateList) {
