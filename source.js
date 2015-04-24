@@ -27,6 +27,65 @@ function favorite(id) {
     console.log('favorite clicked ', id);   
 }
 
+function GistListItem(gist){
+    var glitem = document.createElement('div');
+    glitem.setAttribute('class', 'gistItem');
+    
+    var firstline = document.createElement('div');
+    firstline.setAttribute('class','firstline');
+    
+    if (gist.userhtml){
+        var ownerlink = document.createElement('a');
+        ownerlink.setAttribute('href',gist.userhtml);
+    }
+    
+    var ownerimage = document.createElement('img');
+    ownerimage.setAttribute('src',gist.useravtimg);
+    ownerimage.setAttribute('alt', 'avatar');
+    ownerimage.setAttribute('class','avatar');
+    
+    if (gist.userhtml) ownerlink.appendChild(ownerimage);
+    else firstline.appendChild(ownerimage); 
+    
+    var ownername = document.createElement('div');
+    var ownernameTEXT = document.createTextNode(gist.username);
+    ownername.setAttribute('class','userName');
+    ownername.appendChild(ownernameTEXT);
+    
+    if (gist.userhtml) {
+        ownerlink.appendChild(ownerimage);
+        firstline.appendChild(ownerlink);
+    }
+    else firstline.appendChild(ownername); 
+    
+    glitem.appendChild(firstline);
+    
+    var secondline = document.createElement('div');
+    secondline.setAttribute('class','secondLine');
+    
+    var glink = document.createElement('a');
+    glink.setAttribute('class','description');
+    glink.setAttribute('href',gist.gisthtml);
+    var descText = document.createTextNode(gist.description);
+    glink.appendChild(descText);
+    
+    secondline.appendChild(glink);
+    
+    var fav = document.createElement('img');
+    fav.setAttribute('src','emptyStar.png');
+    fav.setAttribute('alt','favorite');
+    fav.setAttribute('class','favoritebutton');
+    fav.setAttribute('id',gist.id);
+    fav.setAttribute('onclick','favorite(this.id)');
+    
+    secondline.appendChild(fav);
+    
+    glitem.appendChild(secondline);
+    
+    return glitem;
+    
+}
+
 
 //attached to search button
 function getGists() {
@@ -88,6 +147,16 @@ function getGists() {
                 GistList.push(nextGist);
                 
             });
+            
+            
+            ////make calls to update database and refresh
+            
+            //test out insert
+            
+            var sec = document.getElementById('gistlist');
+            sec.appendChild(GistListItem(GistList[0]));
+            sec.appendChild(GistListItem(GistList[1]));
+
         }
     };
     
