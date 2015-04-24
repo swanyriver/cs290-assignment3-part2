@@ -51,14 +51,26 @@ function getGistbyID(id){
     }
 }
 
-function updateList(updateList) {
+function updateList() {
     var list = document.getElementById('gistlist');
     
     clearNode(list);
 
-    updateList.forEach(function (gist) {
+    GistList.filter(listFilter).forEach(function (gist) {
         list.appendChild(new GistListItem(gist));
     });
+}
+
+function listFilter(gist){
+    //is a favorite
+    if(favoriteIDs.indexOf(gist.id) != -1){
+        return false;
+    }
+    
+    //not in selected language
+    //TODO implement
+    
+    return true;
 }
 
 function clearNode(node) {
@@ -204,7 +216,7 @@ function getGists() {
 
 
             ////make calls to update database and refresh
-            updateList(GistList);
+            updateList();
 
         }
     };
