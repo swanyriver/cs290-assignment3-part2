@@ -6,16 +6,22 @@ function updateFavorites() {
 
 }
 
-function favorite(id) {
-    console.log('favorite clicked ', id);
+function favorite(id, elem) {
+    
+    while(elem.className != 'gistItem'){
+        elem = elem.parentElement;
+    }
+    
+    elem.parentElement.removeChild(elem);
+    document.getElementById('favoritelist').appendChild(elem);
 }
 
-function updateList() {
+function updateList(updateList) {
     var list = document.getElementById('gistlist');
     
     clearNode(list);
 
-    GistList.forEach(function (gist) {
+    updateList.forEach(function (gist) {
         list.appendChild(new GistListItem(gist));
     });
 }
@@ -79,7 +85,7 @@ function GistListItem(gist) {
     fav.setAttribute('alt', 'favorite');
     fav.setAttribute('class', 'favoritebutton');
     fav.setAttribute('id', gist.id);
-    fav.setAttribute('onclick', 'favorite(this.id)');
+    fav.setAttribute('onclick', 'favorite(this.id, this)');
 
     secondline.appendChild(fav);
 
@@ -153,7 +159,7 @@ function getGists() {
 
 
             ////make calls to update database and refresh
-            updateList();
+            updateList(GistList);
 
         }
     };
