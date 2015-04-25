@@ -110,7 +110,7 @@ function updateLanguagePanel(){
         
         chlabel.appendChild(ch);
         
-        chlabel.appendChild(document.createTextNode(lang));
+        chlabel.appendChild(document.createTextNode(lang + ' (' + numEachLanguage[lang] + ')  '));
         
         langList.appendChild(chlabel);
     });
@@ -138,6 +138,7 @@ function clearNode(node) {
     }
 }
 
+//returns an HTML element
 function GistListItem(gist) {
     var glitem = document.createElement('div');
     glitem.setAttribute('class', 'gistItem');
@@ -172,6 +173,16 @@ function GistListItem(gist) {
     } else {
         firstline.appendChild(ownername);
     }
+    
+    var langsdiv = document.createElement('div');
+    langsdiv.setAttribute('class','langList');
+    var langstr = '';
+    gist.languages.forEach(function(lang){
+        langstr+=lang + ' ';
+    });
+    langsdiv.appendChild(document.createTextNode(langstr));
+    
+    firstline.appendChild(langsdiv);
 
     glitem.appendChild(firstline);
 

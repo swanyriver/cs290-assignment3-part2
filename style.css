@@ -16,6 +16,12 @@
     float: left;
 }
 
+.langList{
+    float: right;
+    font-family: "Lucida Console", Monaco, monospace;
+    color: grey;
+}
+
 .secondLine {
     clear: both;
 }

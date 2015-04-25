@@ -1,6 +1,6 @@
-update request uri acording numPages paramater
-or better, use getelement to read the desired number of pages from within getGists function
-
-#pages selection
-
 Language selection
+
+move username under picture, and description to first line
+possibly align languages next to star
+
+
