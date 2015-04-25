@@ -2,14 +2,13 @@ var GistList = [];
 var favoriteIDs = [];
 var languagesPresent = [];
 var numEachLanguage = new Object();
-
+var langaugesSelected = [];
 
 
 function updateFavorites() {
-    //TODO implement
     console.log('onload called loadFavorites');
 
-    favlist = document.getElementById('favoritelist');
+    var favlist = document.getElementById('favoritelist');
 
     for (var i = 0; i < localStorage.length; i++) {
         key = localStorage.key(i);
@@ -20,6 +19,8 @@ function updateFavorites() {
         
         favlist.appendChild(FavoriteListItem(GistListItem(favitem)));
     }
+    
+    updateLanguagePanel();
 
 }
 
@@ -39,6 +40,8 @@ function favorite(id, elem) {
     //store favorite in local storage
     favoriteIDs.push(id);
     localStorage.setItem(id,JSON.stringify(getGistbyID(id)));
+    
+    updateLanguagePanel();
 
 }
 
@@ -59,6 +62,9 @@ function unfavorite(id, elem) {
     
     //update gistlist, if removed favorite is still in results it will be displayed
     updateList();
+    
+    updateLanguagePanel();
+
 }
 
 function getGistbyID(id){
@@ -78,7 +84,6 @@ function updateList() {
         list.appendChild(new GistListItem(gist));
     });
     
-    updateLanguagePanel();
 }
 
 function updateLanguagePanel(){
@@ -108,28 +113,57 @@ function updateLanguagePanel(){
         ch.setAttribute('onclick','languageSelect(this.checked,this.value)');
         ch.setAttribute('value',lang);
         
+        if(langaugesSelected.indexOf(lang) != -1){
+            ch.setAttribute('checked','true');
+        }
+        
         chlabel.appendChild(ch);
         
         chlabel.appendChild(document.createTextNode(lang + ' (' + numEachLanguage[lang] + ')  '));
         
         langList.appendChild(chlabel);
     });
+    
+    for(var i = 0; i<langaugesSelected.length; i++){
+        //selecetd language no longer in set
+        if(languagesPresent.indexOf(langaugesSelected[i]) == -1){
+            langaugesSelected.splice(i,1);
+        }
+    }
 }
 
 function languageSelect(selected,language){
     console.log(selected,language);
+    
+    if(selected){
+        langaugesSelected.push(language);
+    } else {
+        langaugesSelected.splice(langaugesSelected.indexOf(language),1);
+    }
+    
+    console.log(langaugesSelected);
+    
+    updateList();
+    
 }
 
 function listFilter(gist){
-    return (nonFavorite(gist) && languageSelected(gist));
+    if(!langaugesSelected.length) return nonFavorite(gist);
+    return (nonFavorite(gist) && langFilter(gist));
 }
 
 function nonFavorite(gist){
     return (favoriteIDs.indexOf(gist.id) == -1);
 }
-function languageSelected(gist){
-    //TODO implement this
-    return true;
+
+function langFilter(gist){
+    var match = false;
+    gist.languages.forEach(function(lang){
+        if(langaugesSelected.indexOf(lang) != -1){
+            match = true;
+        }
+    });
+    return match;
 }
 
 function clearNode(node) {
@@ -226,6 +260,7 @@ function getGistsButton(){
     //initialize
     GistList = [];
     GistList.ids = [];
+    var langaugesSelected = [];
     
     //exctact paramater from html element
     var pageSelect = document.getElementById('page-select');
@@ -280,6 +315,7 @@ function getGists(PagesRequested, PageNum) {
             } else {
                 ////make calls to update database and refresh
                 console.log("all pages loaded, refresing page now");
+                updateLanguagePanel();
                 updateList();
             }
 
