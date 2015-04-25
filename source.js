@@ -192,52 +192,60 @@ function GistListItem(gist) {
 
     if (gist.userhtml) {
         ownerlink.appendChild(ownerimage);
+        firstline.appendChild(ownerlink);
     } else {
         firstline.appendChild(ownerimage);
     }
 
-    var ownername = document.createElement('div');
-    var ownernameTEXT = document.createTextNode(gist.username);
-    ownername.setAttribute('class', 'userName');
-    ownername.appendChild(ownernameTEXT);
-
-    if (gist.userhtml) {
-        ownerlink.appendChild(ownername);
-        firstline.appendChild(ownerlink);
-    } else {
-        firstline.appendChild(ownername);
-    }
     
-    var langsdiv = document.createElement('div');
-    langsdiv.setAttribute('class','langList');
-    var langstr = '';
-    gist.languages.forEach(function(lang){
-        langstr+=lang + ' ';
-    });
-    langsdiv.appendChild(document.createTextNode(langstr));
-    
-    firstline.appendChild(langsdiv);
-
-    glitem.appendChild(firstline);
-
-    var secondline = document.createElement('div');
-    secondline.setAttribute('class', 'secondLine');
-
     var glink = document.createElement('a');
     glink.setAttribute('class', 'description');
     glink.setAttribute('href', gist.gisthtml);
     var descText = document.createTextNode(gist.description);
     glink.appendChild(descText);
 
-    secondline.appendChild(glink);
+    firstline.appendChild(glink);
 
+    glitem.appendChild(firstline);
+
+    var secondline = document.createElement('div');
+    secondline.setAttribute('class', 'secondLine');
+
+    ////username
+    if (gist.userhtml) {
+        var ownername = document.createElement('a');
+        ownername.setAttribute('href',gist.userhtml);
+    } else {
+        var ownername = document.createElement('span');
+    }
+    ownername.setAttribute('class', 'userName');
+    var ownernameTEXT = document.createTextNode(gist.username);
+    ownername.appendChild(ownernameTEXT);
+    secondline.appendChild(ownername);
+    
+    var footer = document.createElement('span');
+    footer.setAttribute('class','footer');
+    
+    //languages
+    var langsdiv = document.createElement('span');
+    langsdiv.setAttribute('class','langList');
+    var langstr = '';
+    gist.languages.forEach(function(lang){
+        langstr+=lang + ' ';
+    });
+    langsdiv.appendChild(document.createTextNode(langstr));
+    footer.appendChild(langsdiv);
+
+    ///favorite button
     var fav = document.createElement('img');
     fav.setAttribute('src', 'emptyStar.png');
     fav.setAttribute('alt', 'favorite');
     fav.setAttribute('class', 'favoritebutton');
     fav.setAttribute('id', gist.id);
     fav.setAttribute('onclick', 'favorite(this.id, this)');
-    secondline.appendChild(fav);
+    footer.appendChild(fav);
+    
+    secondline.appendChild(footer);
 
     glitem.appendChild(secondline);
 
