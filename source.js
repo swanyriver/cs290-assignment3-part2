@@ -4,24 +4,31 @@ var languagesPresent = [];
 var numEachLanguage = {};
 var langaugesSelected = [];
 
-
+//called by body onload, accesses local storage to re-create favorites
 function updateFavorites() {
     console.log('onload called loadFavorites');
 
     var favlist = document.getElementById('favoritelist');
 
     for (var i = 0; i < localStorage.length; i++) {
+        
+        //retrive item from storage and parse it to Gist Object
         var key = localStorage.key(i);
         var jsonStr = localStorage.getItem(key);
         var favitem = JSON.parse(jsonStr);
 
+        //used for filtering favorites out of general list
         favoriteIDs.push(favitem.id);
 
+        //create an HTML element from Gist Object
+        //Modify it for favorites list, changing fav image and onclick
+        //add element to favlist div
         favlist.appendChild(FavoriteListItem(GistListItem(favitem)));
     }
 
 }
 
+//called by clicking on empty star icon
 function favorite(id, elem) {
 
     console.log('favorite', id);
@@ -33,14 +40,16 @@ function favorite(id, elem) {
 
     //remove from gists and move to favorite
     elem.parentElement.removeChild(elem);
-    document.getElementById('favoritelist').appendChild(FavoriteListItem(elem));
-
+    var favlist = document.getElementById('favoritelist');
+    favlist.insertBefore(FavoriteListItem(elem),favlist.firstChild);
+    
     //store favorite in local storage
     favoriteIDs.push(id);
     localStorage.setItem(id, JSON.stringify(getGistbyID(id)));
 
     updateLanguagePanel();
 
+    //for the rare case that the there are no remaining items in filtered languages
     if (!langaugesSelected.length) {
         updateList();
     }
@@ -69,6 +78,7 @@ function unfavorite(id, elem) {
 
 }
 
+//used to retrieve Gist object from id recieved by Favorite function
 function getGistbyID(id) {
     for (var i = 0; i < GistList.length; i++) {
         if (GistList[i].id == id) {
@@ -77,6 +87,7 @@ function getGistbyID(id) {
     }
 }
 
+//refreshes GistList element of HTML, creating HTML elements from Gist object array
 function updateList() {
     var list = document.getElementById('gistlist');
 
@@ -88,10 +99,13 @@ function updateList() {
 
 }
 
+//count languages present and generate checkboxes
 function updateLanguagePanel() {
     languagesPresent = [];
     numEachLanguage = {};
 
+    //generates a list of languages and a count of each one
+    //for only Gists that are not favorited
     GistList.filter(nonFavorite).forEach(function(gist) {
         gist.languages.forEach(function(lang) {
             if (languagesPresent.indexOf(lang) == -1) {
@@ -134,6 +148,7 @@ function updateLanguagePanel() {
     }
 }
 
+//called by checkbox click, updates languagesSelected list and trigers a list refresh
 function languageSelect(selected, language) {
     console.log(selected, language);
 
@@ -149,15 +164,18 @@ function languageSelect(selected, language) {
 
 }
 
+//Return only items not favoirted and containing selected languages
 function listFilter(gist) {
     if (!langaugesSelected.length) return nonFavorite(gist);
     return (nonFavorite(gist) && langFilter(gist));
 }
 
+//return items not in favorites list
 function nonFavorite(gist) {
     return (favoriteIDs.indexOf(gist.id) == -1);
 }
 
+//return items that contain a selected language
 function langFilter(gist) {
     var match = false;
     gist.languages.forEach(function(lang) {
@@ -168,13 +186,14 @@ function langFilter(gist) {
     return match;
 }
 
+//empyt contents of an HTML element
 function clearNode(node) {
     while (node.firstChild) {
         node.removeChild(node.firstChild);
     }
 }
 
-//returns an HTML element
+//returns an HTML element generated from a Gist object
 function GistListItem(gist) {
     var glitem = document.createElement('div');
     glitem.setAttribute('class', 'gistItem');
@@ -182,11 +201,13 @@ function GistListItem(gist) {
     var firstline = document.createElement('div');
     firstline.setAttribute('class', 'firstline');
 
+    //link to owner profile
     if (gist.userhtml) {
         var ownerlink = document.createElement('a');
         ownerlink.setAttribute('href', gist.userhtml);
     }
 
+    //owners avatar or annonymous img
     var ownerimage = document.createElement('img');
     ownerimage.setAttribute('src', gist.useravtimg);
     ownerimage.setAttribute('alt', 'avatar');
@@ -199,7 +220,7 @@ function GistListItem(gist) {
         firstline.appendChild(ownerimage);
     }
 
-
+    //description and link to gist page
     var glink = document.createElement('a');
     glink.setAttribute('class', 'description');
     glink.setAttribute('href', gist.gisthtml);
@@ -266,6 +287,7 @@ function FavoriteListItem(glitem) {
     return glitem;
 }
 
+//linked to search button, triggers AJAX calls
 function getGistsButton() {
     //initialize
     GistList = [];
@@ -337,6 +359,7 @@ function getGists(PagesRequested, PageNum) {
 
 }
 
+//Create a Gist object from JSON parse object
 function CreateGist(g) {
     var nextGist = {};
 
