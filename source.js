@@ -269,7 +269,7 @@ function FavoriteListItem(glitem) {
 function getGistsButton() {
     //initialize
     GistList = [];
-    GistList.ids = [];
+    GistList.ids = {};
     var langaugesSelected = [];
 
     //exctact paramater from html element
@@ -310,9 +310,9 @@ function getGists(PagesRequested, PageNum) {
             //////make an array of gists////
             GistsFeed.forEach(function(g) {
 
-                if (GistList.indexOf(g.id) == -1) {
+                if (!GistList.ids[g.id]) {
                     GistList.push(CreateGist(g));
-                    GistList.ids.push(g.id);
+                    GistList.ids[g.id]=true;
                 }
 
             });
