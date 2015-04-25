@@ -19,8 +19,6 @@ function updateFavorites() {
         
         favlist.appendChild(FavoriteListItem(GistListItem(favitem)));
     }
-    
-    updateLanguagePanel();
 
 }
 
@@ -42,6 +40,10 @@ function favorite(id, elem) {
     localStorage.setItem(id,JSON.stringify(getGistbyID(id)));
     
     updateLanguagePanel();
+
+    if (!langaugesSelected.length){
+        updateList();
+    }
 
 }
 

@@ -1,6 +1,8 @@
-Language selection
+Speed up search load,
+currently because each are checked for duplicates it is nsquared
 
-move username under picture, and description to first line
-possibly align languages next to star
+store them in an object with ids as name
+then store array of ids in order
+then construct array of gists from object
 
 
