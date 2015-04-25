@@ -82,7 +82,42 @@ function updateList() {
 }
 
 function updateLanguagePanel(){
+    languagesPresent = []
+    numEachLanguage = new Object();
+
+    GistList.filter(nonFavorite).forEach(function(gist) {
+        gist.languages.forEach(function(lang){   
+            if (languagesPresent.indexOf(lang) == -1){
+                languagesPresent.push(lang);
+                numEachLanguage[lang] = 1;
+            } else {
+                numEachLanguage[lang]++;
+            }
+        });
+    });
     
+    //update html
+    langList = document.getElementById('languageList');
+    clearNode(langList);
+    
+    languagesPresent.forEach(function (lang){
+        chlabel = document.createElement('label');
+        ch = document.createElement('input');
+        
+        ch.setAttribute('type','checkbox');
+        ch.setAttribute('onclick','languageSelect(this.checked,this.value)');
+        ch.setAttribute('value',lang);
+        
+        chlabel.appendChild(ch);
+        
+        chlabel.appendChild(document.createTextNode(lang));
+        
+        langList.appendChild(chlabel);
+    });
+}
+
+function languageSelect(selected,language){
+    console.log(selected,language);
 }
 
 function listFilter(gist){
