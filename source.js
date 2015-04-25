@@ -1,7 +1,7 @@
 var GistList = [];
 var favoriteIDs = [];
 var languagesPresent = [];
-var numEachLanguage = new Object();
+var numEachLanguage = {};
 var langaugesSelected = [];
 
 
@@ -11,67 +11,67 @@ function updateFavorites() {
     var favlist = document.getElementById('favoritelist');
 
     for (var i = 0; i < localStorage.length; i++) {
-        key = localStorage.key(i);
-        jsonStr = localStorage.getItem(key);
-        favitem = JSON.parse(jsonStr);
-        
+        var key = localStorage.key(i);
+        var jsonStr = localStorage.getItem(key);
+        var favitem = JSON.parse(jsonStr);
+
         favoriteIDs.push(favitem.id);
-        
+
         favlist.appendChild(FavoriteListItem(GistListItem(favitem)));
     }
 
 }
 
 function favorite(id, elem) {
-    
-    console.log("favorite",id);
-    
+
+    console.log('favorite', id);
+
     //get list item
-    while(elem.className != 'gistItem'){
+    while (elem.className != 'gistItem') {
         elem = elem.parentElement;
     }
-    
+
     //remove from gists and move to favorite
     elem.parentElement.removeChild(elem);
     document.getElementById('favoritelist').appendChild(FavoriteListItem(elem));
-    
+
     //store favorite in local storage
     favoriteIDs.push(id);
-    localStorage.setItem(id,JSON.stringify(getGistbyID(id)));
-    
+    localStorage.setItem(id, JSON.stringify(getGistbyID(id)));
+
     updateLanguagePanel();
 
-    if (!langaugesSelected.length){
+    if (!langaugesSelected.length) {
         updateList();
     }
 
 }
 
 function unfavorite(id, elem) {
-    console.log ("unfavorite", id);
-    
+    console.log('unfavorite', id);
+
     //remove list from local storage
     localStorage.removeItem(id);
-    
+
     //remove from favorite list display
-    while(elem.className != 'FavoriteItem'){
+    while (elem.className != 'FavoriteItem') {
         elem = elem.parentElement;
     }
     document.getElementById('favoritelist').removeChild(elem);
-    
+
     //remove id from favorites
-    favoriteIDs.splice(favoriteIDs.indexOf(id),1);
-    
+    favoriteIDs.splice(favoriteIDs.indexOf(id), 1);
+
     //update gistlist, if removed favorite is still in results it will be displayed
     updateList();
-    
+
     updateLanguagePanel();
 
 }
 
-function getGistbyID(id){
-    for (var i = 0; i<GistList.length; i++){
-        if (GistList[i].id==id){
+function getGistbyID(id) {
+    for (var i = 0; i < GistList.length; i++) {
+        if (GistList[i].id == id) {
             return GistList[i];
         }
     }
@@ -79,22 +79,22 @@ function getGistbyID(id){
 
 function updateList() {
     var list = document.getElementById('gistlist');
-    
+
     clearNode(list);
 
-    GistList.filter(listFilter).forEach(function (gist) {
+    GistList.filter(listFilter).forEach(function(gist) {
         list.appendChild(new GistListItem(gist));
     });
-    
+
 }
 
-function updateLanguagePanel(){
-    languagesPresent = []
-    numEachLanguage = new Object();
+function updateLanguagePanel() {
+    languagesPresent = [];
+    numEachLanguage = {};
 
     GistList.filter(nonFavorite).forEach(function(gist) {
-        gist.languages.forEach(function(lang){   
-            if (languagesPresent.indexOf(lang) == -1){
+        gist.languages.forEach(function(lang) {
+            if (languagesPresent.indexOf(lang) == -1) {
                 languagesPresent.push(lang);
                 numEachLanguage[lang] = 1;
             } else {
@@ -102,66 +102,66 @@ function updateLanguagePanel(){
             }
         });
     });
-    
+
     //update html
-    langList = document.getElementById('languageList');
+    var langList = document.getElementById('languageList');
     clearNode(langList);
-    
-    languagesPresent.forEach(function (lang){
-        chlabel = document.createElement('label');
-        ch = document.createElement('input');
-        
-        ch.setAttribute('type','checkbox');
-        ch.setAttribute('onclick','languageSelect(this.checked,this.value)');
-        ch.setAttribute('value',lang);
-        
-        if(langaugesSelected.indexOf(lang) != -1){
-            ch.setAttribute('checked','true');
+
+    languagesPresent.forEach(function(lang) {
+        var chlabel = document.createElement('label');
+        var ch = document.createElement('input');
+
+        ch.setAttribute('type', 'checkbox');
+        ch.setAttribute('onclick', 'languageSelect(this.checked,this.value)');
+        ch.setAttribute('value', lang);
+
+        if (langaugesSelected.indexOf(lang) != -1) {
+            ch.setAttribute('checked', 'true');
         }
-        
+
         chlabel.appendChild(ch);
-        
+
         chlabel.appendChild(document.createTextNode(lang + ' (' + numEachLanguage[lang] + ')  '));
-        
+
         langList.appendChild(chlabel);
     });
-    
-    for(var i = 0; i<langaugesSelected.length; i++){
+
+    for (var i = 0; i < langaugesSelected.length; i++) {
         //selecetd language no longer in set
-        if(languagesPresent.indexOf(langaugesSelected[i]) == -1){
-            langaugesSelected.splice(i,1);
+        if (languagesPresent.indexOf(langaugesSelected[i]) == -1) {
+            langaugesSelected.splice(i, 1);
         }
     }
 }
 
-function languageSelect(selected,language){
-    console.log(selected,language);
-    
-    if(selected){
+function languageSelect(selected, language) {
+    console.log(selected, language);
+
+    if (selected) {
         langaugesSelected.push(language);
     } else {
-        langaugesSelected.splice(langaugesSelected.indexOf(language),1);
+        langaugesSelected.splice(langaugesSelected.indexOf(language), 1);
     }
-    
+
     console.log(langaugesSelected);
-    
+
     updateList();
-    
+
 }
 
-function listFilter(gist){
-    if(!langaugesSelected.length) return nonFavorite(gist);
+function listFilter(gist) {
+    if (!langaugesSelected.length) return nonFavorite(gist);
     return (nonFavorite(gist) && langFilter(gist));
 }
 
-function nonFavorite(gist){
+function nonFavorite(gist) {
     return (favoriteIDs.indexOf(gist.id) == -1);
 }
 
-function langFilter(gist){
+function langFilter(gist) {
     var match = false;
-    gist.languages.forEach(function(lang){
-        if(langaugesSelected.indexOf(lang) != -1){
+    gist.languages.forEach(function(lang) {
+        if (langaugesSelected.indexOf(lang) != -1) {
             match = true;
         }
     });
@@ -199,7 +199,7 @@ function GistListItem(gist) {
         firstline.appendChild(ownerimage);
     }
 
-    
+
     var glink = document.createElement('a');
     glink.setAttribute('class', 'description');
     glink.setAttribute('href', gist.gisthtml);
@@ -216,7 +216,7 @@ function GistListItem(gist) {
     ////username
     if (gist.userhtml) {
         var ownername = document.createElement('a');
-        ownername.setAttribute('href',gist.userhtml);
+        ownername.setAttribute('href', gist.userhtml);
     } else {
         var ownername = document.createElement('span');
     }
@@ -224,16 +224,16 @@ function GistListItem(gist) {
     var ownernameTEXT = document.createTextNode(gist.username);
     ownername.appendChild(ownernameTEXT);
     secondline.appendChild(ownername);
-    
+
     var footer = document.createElement('span');
-    footer.setAttribute('class','footer');
-    
+    footer.setAttribute('class', 'footer');
+
     //languages
     var langsdiv = document.createElement('span');
-    langsdiv.setAttribute('class','langList');
+    langsdiv.setAttribute('class', 'langList');
     var langstr = '';
-    gist.languages.forEach(function(lang){
-        langstr+=lang + ' ';
+    gist.languages.forEach(function(lang) {
+        langstr += lang + ' ';
     });
     langsdiv.appendChild(document.createTextNode(langstr));
     footer.appendChild(langsdiv);
@@ -246,7 +246,7 @@ function GistListItem(gist) {
     fav.setAttribute('id', gist.id);
     fav.setAttribute('onclick', 'favorite(this.id, this)');
     footer.appendChild(fav);
-    
+
     secondline.appendChild(footer);
 
     glitem.appendChild(secondline);
@@ -256,38 +256,37 @@ function GistListItem(gist) {
 }
 
 //recives a gistlist item made by GistListItem
-function FavoriteListItem(glitem){
-    
-    glitem.className='FavoriteItem';
+function FavoriteListItem(glitem) {
+
+    glitem.className = 'FavoriteItem';
     var button = glitem.getElementsByClassName('favoritebutton')[0];
     button.setAttribute('src', 'star.jpg');
-    button.setAttribute('onclick', 'unfavorite(this.id, this)'); 
-    
+    button.setAttribute('onclick', 'unfavorite(this.id, this)');
+
     return glitem;
 }
 
-function getGistsButton(){
+function getGistsButton() {
     //initialize
     GistList = [];
     GistList.ids = [];
     var langaugesSelected = [];
-    
+
     //exctact paramater from html element
     var pageSelect = document.getElementById('page-select');
-    numPages = pageSelect.options[pageSelect.selectedIndex].value
-    console.log(numPages, " pages of gists requested");
-    
+    var numPages = pageSelect.options[pageSelect.selectedIndex].value;
+    console.log(numPages, ' pages of gists requested');
+
     //call recursive Get
-    getGists(numPages,1);
-    
+    getGists(numPages, 1);
+
 }
 
 //attached to search button
 function getGists(PagesRequested, PageNum) {
 
     var url = 'https://api.github.com/gists?page=' + PageNum;
-    console.log("request url: ", url);
-    //var url = 'http://web.engr.oregonstate.edu/~swansonb/web3/gists';  //TODO reset to github api
+    console.log('request url: ', url);
     var gistReq = new XMLHttpRequest();
     var GistsFeed;
 
@@ -296,7 +295,7 @@ function getGists(PagesRequested, PageNum) {
     }
 
     //defining behavior for state changes, particularily state 4, request done//
-    gistReq.onreadystatechange = function () {
+    gistReq.onreadystatechange = function() {
         console.log(this.readyState, this.status, this.statusText);
         if (this.readyState === 4 && this.status === 200) {
             console.log('request done');
@@ -308,23 +307,23 @@ function getGists(PagesRequested, PageNum) {
                 throw 'no response';
             }
 
-            //////make an array of gists////            
-            GistsFeed.forEach(function (g) {
+            //////make an array of gists////
+            GistsFeed.forEach(function(g) {
 
-                if(GistList.indexOf(g.id) == -1 ) {
+                if (GistList.indexOf(g.id) == -1) {
                     GistList.push(CreateGist(g));
                     GistList.ids.push(g.id);
                 }
-                
+
             });
 
-            
+
             /////recusive call to xmlrequest,  update page elements on breakcase
-            if(PageNum<PagesRequested){
-                getGists(PagesRequested,++PageNum);
+            if (PageNum < PagesRequested) {
+                getGists(PagesRequested, ++PageNum);
             } else {
                 ////make calls to update database and refresh
-                console.log("all pages loaded, refresing page now");
+                console.log('all pages loaded, refresing page now');
                 updateLanguagePanel();
                 updateList();
             }
@@ -338,8 +337,8 @@ function getGists(PagesRequested, PageNum) {
 
 }
 
-function CreateGist(g){
-    var nextGist = new Object();
+function CreateGist(g) {
+    var nextGist = {};
 
     nextGist.id = g.id;
     nextGist.gisthtml = g.html_url;
@@ -364,13 +363,13 @@ function CreateGist(g){
     nextGist.languages = [];
     for (var f in g.files) {
         var lang = g.files[f].language;
-        if (!lang){
+        if (!lang) {
             lang = 'None';
         }
-        if (nextGist.languages.indexOf(lang) == -1){
+        if (nextGist.languages.indexOf(lang) == -1) {
             nextGist.languages.push(lang);
         }
     }
-    
+
     return nextGist;
 }
