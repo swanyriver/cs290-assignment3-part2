@@ -9,16 +9,19 @@ function updateFavorites() {
     console.log('onload called loadFavorites');
 
     var favlist = document.getElementById('favoritelist');
+    
+    favoriteIDs = JSON.parse(localStorage.getItem('favoriteIDs'));
+    
+    if(!favoriteIDs) {
+        favoriteIDs = [];
+        return;
+    }
 
-    for (var i = 0; i < localStorage.length; i++) {
+    for (var i = 0; i < favoriteIDs.length; i++) {
         
         //retrive item from storage and parse it to Gist Object
-        var key = localStorage.key(i);
-        var jsonStr = localStorage.getItem(key);
+        var jsonStr = localStorage.getItem(favoriteIDs[i]);
         var favitem = JSON.parse(jsonStr);
-
-        //used for filtering favorites out of general list
-        favoriteIDs.push(favitem.id);
 
         //create an HTML element from Gist Object
         //Modify it for favorites list, changing fav image and onclick
@@ -40,12 +43,12 @@ function favorite(id, elem) {
 
     //remove from gists and move to favorite
     elem.parentElement.removeChild(elem);
-    var favlist = document.getElementById('favoritelist');
-    favlist.insertBefore(FavoriteListItem(elem),favlist.firstChild);
+    document.getElementById('favoritelist').appendChild(FavoriteListItem(elem));
     
     //store favorite in local storage
     favoriteIDs.push(id);
     localStorage.setItem(id, JSON.stringify(getGistbyID(id)));
+    localStorage.setItem('favoriteIDs',JSON.stringify(favoriteIDs));
 
     updateLanguagePanel();
 
@@ -59,9 +62,7 @@ function favorite(id, elem) {
 function unfavorite(id, elem) {
     console.log('unfavorite', id);
 
-    //remove list from local storage
-    localStorage.removeItem(id);
-
+    
     //remove from favorite list display
     while (elem.className != 'FavoriteItem') {
         elem = elem.parentElement;
@@ -70,6 +71,10 @@ function unfavorite(id, elem) {
 
     //remove id from favorites
     favoriteIDs.splice(favoriteIDs.indexOf(id), 1);
+    
+    //remove list from local storage
+    localStorage.removeItem(id);
+    localStorage.setItem('favoriteIDs',JSON.stringify(favoriteIDs));
 
     //update gistlist, if removed favorite is still in results it will be displayed
     updateList();
