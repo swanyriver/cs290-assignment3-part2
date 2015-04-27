@@ -328,6 +328,11 @@ function getGists(PagesRequested, PageNum) {
     //defining behavior for state changes, particularily state 4, request done//
     gistReq.onreadystatechange = function() {
         console.log(this.readyState, this.status, this.statusText);
+        
+        if(this.readyState === 1){
+            errorMSG('loading page ' + PageNum + ' of ' + PagesRequested);
+        }
+        
         if (this.readyState === 4 && this.status === 200) {
             console.log('request done');
             console.log('page', PageNum);
@@ -356,6 +361,7 @@ function getGists(PagesRequested, PageNum) {
             } else {
                 ////make calls to update database and refresh
                 console.log('all pages loaded, refresing page now');
+                errorMSG('');
                 updateLanguagePanel();
                 updateList();
             }
@@ -373,7 +379,8 @@ function getGists(PagesRequested, PageNum) {
 
 function errorMSG(errorStr) {
     var statusbar = document.getElementById('statusText');
-    var errortxt = document.createTextNode(errorstr);
+    clearNode(statusbar);
+    var errortxt = document.createTextNode(errorStr);
     statusbar.appendChild(errortxt);
 }
 
