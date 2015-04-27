@@ -316,8 +316,8 @@ function getGistsButton() {
 //attached to search button
 function getGists(PagesRequested, PageNum) {
     
-    var statusbar = document.getElementById('statusText');
-    clearNode(statusbar);
+    clearNode(document.getElementById('statusText'));
+    clearNode(document.getElementById('languageList'));
 
     var url = 'https://api.github.com/gists?page=' + PageNum;
     console.log('request url: ', url);
@@ -332,10 +332,6 @@ function getGists(PagesRequested, PageNum) {
     //defining behavior for state changes, particularily state 4, request done//
     gistReq.onreadystatechange = function() {
         console.log(this.readyState, this.status, this.statusText);
-        
-        if(this.readyState === 1){
-            errorMSG('loading page ' + PageNum + ' of ' + PagesRequested);
-        }
         
         if (this.readyState === 4 && this.status === 200) {
             console.log('request done');
@@ -364,16 +360,18 @@ function getGists(PagesRequested, PageNum) {
                 }
 
             });
+            
+            //updated on each pageload
+            updateLanguagePanel();
 
 
-            /////recusive call to xmlrequest,  update page elements on breakcase
+            /////recusive call to xmlrequest
             if (PageNum < PagesRequested) {
                 getGists(PagesRequested, ++PageNum);
             } else {
-                ////make calls to update database and refresh
-                console.log('all pages loaded, refresing page now');
+                ///clear any error text exit recursion
+                console.log('all pages loaded');
                 errorMSG('');
-                updateLanguagePanel();
             }
 
         } else if(this.readyState == 4 && this.status != 200){
