@@ -311,6 +311,9 @@ function getGistsButton() {
 
 //attached to search button
 function getGists(PagesRequested, PageNum) {
+    
+    var statusbar = document.getElementById('statusText');
+    clearNode(statusbar);
 
     var url = 'https://api.github.com/gists?page=' + PageNum;
     console.log('request url: ', url);
@@ -318,6 +321,7 @@ function getGists(PagesRequested, PageNum) {
     var GistsFeed;
 
     if (!gistReq) {
+        errorMSG('unable to create XMLHttpRequest');
         throw 'unable to create XMLHttpRequest';
     }
 
@@ -331,6 +335,7 @@ function getGists(PagesRequested, PageNum) {
             if (this.response) {
                 GistsFeed = JSON.parse(this.response);
             } else {
+                errorMSG('Unable to complete Search, check connection and try again');
                 throw 'no response';
             }
 
@@ -355,6 +360,8 @@ function getGists(PagesRequested, PageNum) {
                 updateList();
             }
 
+        } else if(this.readyState == 4 && this.status != 200){
+            errorMSG('Unable to complete Search, check connection and try again');
         }
     };
 
@@ -362,6 +369,12 @@ function getGists(PagesRequested, PageNum) {
     gistReq.open('GET', url);
     gistReq.send();
 
+}
+
+function errorMSG(errorStr) {
+    var statusbar = document.getElementById('statusText');
+    var errortxt = document.createTextNode(errorstr);
+    statusbar.appendChild(errortxt);
 }
 
 //Create a Gist object from JSON parse object
