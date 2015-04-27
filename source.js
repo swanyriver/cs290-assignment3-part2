@@ -373,6 +373,7 @@ function getGists(PagesRequested, PageNum) {
 
 function errorMSG(errorStr) {
     var statusbar = document.getElementById('statusText');
+    clearNode(statusbar);
     var errortxt = document.createTextNode(errorstr);
     statusbar.appendChild(errortxt);
 }
