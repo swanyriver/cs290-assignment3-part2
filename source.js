@@ -99,7 +99,7 @@ function updateList() {
     clearNode(list);
 
     GistList.filter(listFilter).forEach(function(gist) {
-        list.appendChild(new GistListItem(gist));
+        list.appendChild(GistListItem(gist));
     });
 
 }
@@ -304,6 +304,10 @@ function getGistsButton() {
     var numPages = pageSelect.options[pageSelect.selectedIndex].value;
     console.log(numPages, ' pages of gists requested');
 
+    //clear list
+    var list = document.getElementById('gistlist');
+    clearNode(list);
+    
     //call recursive Get
     getGists(numPages, 1);
 
@@ -343,12 +347,19 @@ function getGists(PagesRequested, PageNum) {
                 errorMSG('Unable to complete Search, check connection and try again');
                 throw 'no response';
             }
+            
+            //for placing elements as they are parsed
+            var list = document.getElementById('gistlist');
 
             //////make an array of gists////
             GistsFeed.forEach(function(g) {
 
                 if (!GistList.ids[g.id]) {
-                    GistList.push(CreateGist(g));
+                    var nextGist = CreateGist(g);
+                    GistList.push(nextGist);
+                    if(listFilter(nextGist)){
+                        list.appendChild(GistListItem(nextGist));
+                    }
                     GistList.ids[g.id]=true;
                 }
 
@@ -363,7 +374,6 @@ function getGists(PagesRequested, PageNum) {
                 console.log('all pages loaded, refresing page now');
                 errorMSG('');
                 updateLanguagePanel();
-                updateList();
             }
 
         } else if(this.readyState == 4 && this.status != 200){
