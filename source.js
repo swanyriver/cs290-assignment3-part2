@@ -2,7 +2,7 @@ var GistList = [];
 var favoriteIDs = [];
 var languagesPresent = [];
 var numEachLanguage = {};
-var langaugesSelected = [];
+var languagesSelected = [];
 
 //called by body onload, accesses local storage to re-create favorites
 function updateFavorites() {
@@ -69,7 +69,7 @@ function favorite(id, elem) {
     updateLanguagePanel();
 
     //for the rare case that the there are no remaining items in filtered languages
-    if (!langaugesSelected.length) {
+    if (!languagesSelected.length) {
         updateList();
     }
 
@@ -150,7 +150,7 @@ function updateLanguagePanel() {
         ch.setAttribute('onclick', 'languageSelect(this.checked,this.value)');
         ch.setAttribute('value', lang);
 
-        if (langaugesSelected.indexOf(lang) != -1) {
+        if (languagesSelected.indexOf(lang) != -1) {
             ch.setAttribute('checked', 'true');
         }
 
@@ -161,10 +161,10 @@ function updateLanguagePanel() {
         langList.appendChild(chlabel);
     });
 
-    for (var i = 0; i < langaugesSelected.length; i++) {
+    for (var i = 0; i < languagesSelected.length; i++) {
         //selecetd language no longer in set
-        if (languagesPresent.indexOf(langaugesSelected[i]) == -1) {
-            langaugesSelected.splice(i, 1);
+        if (languagesPresent.indexOf(languagesSelected[i]) == -1) {
+            languagesSelected.splice(i, 1);
         }
     }
 }
@@ -174,12 +174,12 @@ function languageSelect(selected, language) {
     console.log(selected, language);
 
     if (selected) {
-        langaugesSelected.push(language);
+        languagesSelected.push(language);
     } else {
-        langaugesSelected.splice(langaugesSelected.indexOf(language), 1);
+        languagesSelected.splice(languagesSelected.indexOf(language), 1);
     }
 
-    console.log(langaugesSelected);
+    console.log(languagesSelected);
 
     updateList();
 
@@ -187,7 +187,7 @@ function languageSelect(selected, language) {
 
 //Return only items not favoirted and containing selected languages
 function listFilter(gist) {
-    if (!langaugesSelected.length) return nonFavorite(gist);
+    if (!languagesSelected.length) return nonFavorite(gist);
     return (nonFavorite(gist) && langFilter(gist));
 }
 
@@ -200,7 +200,7 @@ function nonFavorite(gist) {
 function langFilter(gist) {
     var match = false;
     gist.languages.forEach(function(lang) {
-        if (langaugesSelected.indexOf(lang) != -1) {
+        if (languagesSelected.indexOf(lang) != -1) {
             match = true;
         }
     });
@@ -313,8 +313,7 @@ function getGistsButton() {
     //initialize
     GistList = [];
     GistList.ids = {};
-    var langaugesSelected = [];
-
+    
     //exctact paramater from html element
     var pageSelect = document.getElementById('page-select');
     var numPages = pageSelect.options[pageSelect.selectedIndex].value;
@@ -388,6 +387,12 @@ function getGists(PagesRequested, PageNum) {
                 ///clear any error text exit recursion
                 console.log('all pages loaded');
                 errorMSG('');
+                
+                //languages selected no longer present
+                if(!languagesSelected.length && !list.children.length){
+                    updateList();
+                }
+                
             }
 
         } else if(this.readyState == 4 && this.status != 200){
