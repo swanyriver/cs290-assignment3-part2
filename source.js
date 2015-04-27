@@ -99,7 +99,7 @@ function updateList() {
     clearNode(list);
 
     GistList.filter(listFilter).forEach(function(gist) {
-        list.appendChild(new GistListItem(gist));
+        list.appendChild(GistListItem(gist));
     });
 
 }
@@ -304,6 +304,10 @@ function getGistsButton() {
     var numPages = pageSelect.options[pageSelect.selectedIndex].value;
     console.log(numPages, ' pages of gists requested');
 
+    //clear list
+    var list = document.getElementById('gistlist');
+    clearNode(list);
+    
     //call recursive Get
     getGists(numPages, 1);
 
@@ -312,8 +316,8 @@ function getGistsButton() {
 //attached to search button
 function getGists(PagesRequested, PageNum) {
     
-    var statusbar = document.getElementById('statusText');
-    clearNode(statusbar);
+    clearNode(document.getElementById('statusText'));
+    clearNode(document.getElementById('languageList'));
 
     var url = 'https://api.github.com/gists?page=' + PageNum;
     console.log('request url: ', url);
@@ -328,6 +332,7 @@ function getGists(PagesRequested, PageNum) {
     //defining behavior for state changes, particularily state 4, request done//
     gistReq.onreadystatechange = function() {
         console.log(this.readyState, this.status, this.statusText);
+        
         if (this.readyState === 4 && this.status === 200) {
             console.log('request done');
             console.log('page', PageNum);
@@ -338,26 +343,35 @@ function getGists(PagesRequested, PageNum) {
                 errorMSG('Unable to complete Search, check connection and try again');
                 throw 'no response';
             }
+            
+            //for placing elements as they are parsed
+            var list = document.getElementById('gistlist');
 
             //////make an array of gists////
             GistsFeed.forEach(function(g) {
 
                 if (!GistList.ids[g.id]) {
-                    GistList.push(CreateGist(g));
+                    var nextGist = CreateGist(g);
+                    GistList.push(nextGist);
+                    if(listFilter(nextGist)){
+                        list.appendChild(GistListItem(nextGist));
+                    }
                     GistList.ids[g.id]=true;
                 }
 
             });
+            
+            //updated on each pageload
+            updateLanguagePanel();
 
 
-            /////recusive call to xmlrequest,  update page elements on breakcase
+            /////recusive call to xmlrequest
             if (PageNum < PagesRequested) {
                 getGists(PagesRequested, ++PageNum);
             } else {
-                ////make calls to update database and refresh
-                console.log('all pages loaded, refresing page now');
-                updateLanguagePanel();
-                updateList();
+                ///clear any error text exit recursion
+                console.log('all pages loaded');
+                errorMSG('');
             }
 
         } else if(this.readyState == 4 && this.status != 200){
@@ -374,7 +388,7 @@ function getGists(PagesRequested, PageNum) {
 function errorMSG(errorStr) {
     var statusbar = document.getElementById('statusText');
     clearNode(statusbar);
-    var errortxt = document.createTextNode(errorstr);
+    var errortxt = document.createTextNode(errorStr);
     statusbar.appendChild(errortxt);
 }
 
