@@ -16,18 +16,34 @@ function updateFavorites() {
         favoriteIDs = [];
         return;
     }
+    
+    var goodFavs = []; 
 
     for (var i = 0; i < favoriteIDs.length; i++) {
         
+        console.log('loading favorite:',favoriteIDs[i]);
+        
         //retrive item from storage and parse it to Gist Object
         var jsonStr = localStorage.getItem(favoriteIDs[i]);
-        var favitem = JSON.parse(jsonStr);
+        
+        //if not then someone has mucked with local storage
+        if(jsonStr){
+            
+            console.log('parsing favorite:',favoriteIDs[i]);
+            
+            var favitem = JSON.parse(jsonStr);
 
-        //create an HTML element from Gist Object
-        //Modify it for favorites list, changing fav image and onclick
-        //add element to favlist div
-        favlist.appendChild(FavoriteListItem(GistListItem(favitem)));
+            //create an HTML element from Gist Object
+            //Modify it for favorites list, changing fav image and onclick
+            //add element to favlist div
+            favlist.appendChild(FavoriteListItem(GistListItem(favitem)));
+            
+            goodFavs.push(favoriteIDs[i]);
+        }
     }
+    
+    favoriteIDs = goodFavs;
+    localStorage.setItem('favoriteIDs',JSON.stringify(favoriteIDs));
 
 }
 
